@@ -1,5 +1,6 @@
 use crate::buffer;
 use crate::image;
+use crate::Image;
 use std::borrow::Cow;
 use std::{fs, io};
 
@@ -234,11 +235,10 @@ pub fn import_images(
     base: Option<&Path>,
     buffer_data: &[buffer::Data],
 ) -> Result<Vec<image::Data>> {
-    let mut images = Vec::new();
-    for image in document.images() {
-        images.push(image::Data::from_source(image.source(), base, buffer_data)?);
-    }
-    Ok(images)
+    document
+        .images()
+        .map(|image| image::Data::from_source(image.source(), base, buffer_data))
+        .collect()
 }
 
 fn import_impl(Gltf { document, blob }: Gltf, base: Option<&Path>) -> Result<Import> {
