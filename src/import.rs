@@ -8,6 +8,7 @@ use crate::{Document, Error, Gltf, Result};
 #[cfg(feature = "EXT_texture_webp")]
 use image_crate::ImageFormat::WebP;
 use image_crate::ImageFormat::{Jpeg, Png};
+use rayon::prelude::{IntoParallelIterator, ParallelIterator};
 use std::path::Path;
 
 /// Return type of `import`.
@@ -237,6 +238,8 @@ pub fn import_images(
 ) -> Result<Vec<image::Data>> {
     document
         .images()
+        .collect::<Vec<_>>()
+        .into_par_iter()
         .map(|image| image::Data::from_source(image.source(), base, buffer_data))
         .collect()
 }
